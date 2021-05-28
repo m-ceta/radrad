@@ -22,12 +22,20 @@ fn main() {
     }
     let program = &args[1];
     let mut tf = false;
-    if args.len() >= 3 && &args[2] == "-tf" {
-        tf = true;
-    }
     let mut af = false;
-    if args.len() >= 4 && &args[3] == "-af" {
-        af = true;
+    if args.len() >= 3 {
+        if &args[2] == "-tf" {
+            tf = true;
+        } else if &args[2] == "-af" {
+            af = true;
+        }
+    }
+    if args.len() >= 4 {
+        if &args[3] == "-tf" {
+            tf = true;
+        } else if &args[3] == "-af" {
+            af = true;
+        }
     }
     if let Some((auth, url)) = rd_client::get_live_stream_info(program, tf, af) {
         if let Ok((mut proc1, mut proc2)) = stream_player::play(&url, &auth) {
