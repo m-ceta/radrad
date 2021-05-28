@@ -20,21 +20,16 @@ fn main() {
     if args.len() < 2 {
         return;
     }
-    let program = &args[1];
+    let mut program = String::new();
     let mut tf = false;
     let mut af = false;
-    if args.len() >= 3 {
-        if &args[2] == "-tf" {
+    for arg in args {
+        if arg == "-tf" {
             tf = true;
-        } else if &args[2] == "-af" {
+        } else if arg == "-af" {
             af = true;
-        }
-    }
-    if args.len() >= 4 {
-        if &args[3] == "-tf" {
-            tf = true;
-        } else if &args[3] == "-af" {
-            af = true;
+        } else if arg.len() > 0 {
+            program = String::from(arg);
         }
     }
     if let Some((auth, url)) = rd_client::get_live_stream_info(program, tf, af) {
