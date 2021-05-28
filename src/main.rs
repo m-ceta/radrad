@@ -32,7 +32,7 @@ fn main() {
             program = String::from(arg);
         }
     }
-    if let Some((auth, url)) = rd_client::get_live_stream_info(program, tf, af) {
+    if let Some((auth, url)) = rd_client::get_live_stream_info(&program, tf, af) {
         if let Ok((mut proc1, mut proc2)) = stream_player::play(&url, &auth) {
             let mut signals = Signals::new(&[SIGINT, SIGHUP, SIGQUIT, SIGKILL, SIGTERM]).unwrap();
             let id1 = proc1.id();
@@ -45,18 +45,18 @@ fn main() {
                             .arg("-9")
                             .arg(id1.to_string())
                             .spawn()
-                            .unwrap_or(format!("Failed to kill process {}", id1.to_string()));
+                            .ok();
                         Command::new("kill")
                             .arg("-9")
                             .arg(id2.to_string())
                             .spawn()
-                            .unwrap_or(format!("Failed to kill process {}", id2.to_string()));
+                            .ok();
                         flag = false;
                     }
                 }
             });
-            proc1.wait().unwrap_or("ffmpeg terminated abnormally.");
-            proc2.wait().unwrap_or("ffplay terminated abnormally.");
+            proc1.wait().ok();
+            proc2.wait().ok();
         } else {
             println!("Cannnot play the program '{}'.", program);
         }

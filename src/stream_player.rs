@@ -12,12 +12,12 @@ pub fn play(url: &String, auth_token: &String) -> Result<(Child, Child), String>
     let mut command2 = Command::new("ffplay");
     let args2 = ["-i", "-"];
     if let Ok(mut proc1) = command1.args(&args1).stdout(Stdio::piped()).spawn() {
-        if let Ok(pipe) = stdout_to_stdin(&proc1) {
+        if let Some(pipe) = stdout_to_stdin(&proc1) {
             if let Ok(proc2) = command2.args(&args2).stdout(pipe).spawn() {
                 return Ok((proc1, proc2));
             } 
         }
-        proc1.kill().unwrap_or("Failed to kill ffmpeg.");
+        proc1.kill().ok();
         return Err(String::from("Failed to execute ffplay."));
     } 
     Err(String::from("Failed to execute ffmpeg."))
