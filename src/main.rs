@@ -41,17 +41,27 @@ fn main() {
                 let mut flag = true;
                 for _sig in signals.forever() {
                     if flag {
-                        Command::new("kill").arg("-9").arg(id1.to_string()).spawn().unwrap();
-                        Command::new("kill").arg("-9").arg(id2.to_string()).spawn().unwrap();
+                        Command::new("kill")
+                            .arg("-9")
+                            .arg(id1.to_string())
+                            .spawn()
+                            .unwrap_or(format!("Failed to kill process {}", id1.to_string()));
+                        Command::new("kill")
+                            .arg("-9")
+                            .arg(id2.to_string())
+                            .spawn()
+                            .unwrap_or(format!("Failed to kill process {}", id2.to_string()));
                         flag = false;
                     }
                 }
             });
-            proc1.wait().unwrap();
-            proc2.wait().unwrap();
+            proc1.wait().unwrap_or("ffmpeg terminated abnormally.");
+            proc2.wait().unwrap_or("ffplay terminated abnormally.");
+        } else {
+            println!("Cannnot play the program '{}'.", program);
         }
     } else {
-        println!("Not found program '{}'.", program);
+        println!("Not found the program '{}'.", program);
     }
 }
 
