@@ -29,6 +29,7 @@ lazy_static! {
 
 #[get("/radrad")]
 async fn get_radrad() -> impl Responder {
+    println!("get_radrad");
     if let Ok(plyr) = PLAYER.read() {
         let res = HttpResponse::Ok().json(models::Station {
             id: plyr.get_station_id(),
@@ -40,27 +41,24 @@ async fn get_radrad() -> impl Responder {
     HttpResponse::NotFound().body("An error occurred while running.")
 }
 
-#[post("/radrad/{cmd}")]
-async fn radrad(web::Path(cmd): web::Path<String>, station: web::Json<models::Station>) -> impl Responder {
-    match cmd.as_str() {
-        "play" => {
-            if let Ok(mut plyr) = PLAYER.write() {
-                if let Some(sta_id) = &station.id {
-                    plyr.play(sta_id, station.af, station.tf);
-                    return HttpResponse::Ok().body("ok");
-                }
-            }
-            HttpResponse::NotFound().body(format!("An error occurred while running '{}'", cmd))
-        },
-        "stop" => {
-            if let Ok(mut plyr) = PLAYER.write() {
-                plyr.stop();
-                return HttpResponse::Ok().body("ok");
-            }
-            HttpResponse::NotFound().body(format!("An error occurred while running '{}'", cmd))
-        },
-        _ => HttpResponse::NotFound().body(format!("'{}' is not found.", cmd)),
+#[post("/radrad/play")]
+async fn radrad_play(station: web::Json<models::Station>) -> impl Responder {
+    if let Ok(mut plyr) = PLAYER.write() {
+        if let Some(sta_id) = &station.id {
+            plyr.play(sta_id, station.af, station.tf);
+            return HttpResponse::Ok().body("ok");
+        }
     }
+    HttpResponse::NotFound().body("An error occurred while running.")
+}
+
+#[get("/radrad/stop")]
+async fn radrad_stop() -> impl Responder {
+    if let Ok(mut plyr) = PLAYER.write() {
+        plyr.stop();
+        return HttpResponse::Ok().body("ok");
+    }
+    HttpResponse::NotFound().body("An error occurred while running.")
 }
 
 #[actix_web::main]
@@ -79,7 +77,7 @@ async fn main() -> std::io::Result<()> {
             }
         });
     }
-    HttpServer::new(|| App::new().service(get_radrad).service(radrad))
+    HttpServer::new(|| App::new().service(get_radrad).service(radrad_play).service(radrad_stop))
         .bind("127.0.0.1:8080")?
         .run()
         .await
