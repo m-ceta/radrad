@@ -32,7 +32,8 @@ impl Player {
 
     pub fn stop(self: &mut Player) {
         if let Some(ref mut cmd) = self.command {
-            cmd.kill().unwrap_or(());
+            cmd.kill().expect("command wasn't running");
+            cmd.wait().expect("command wasn't running");
         }
         self.station_id = None;
         self.option_af = false;
