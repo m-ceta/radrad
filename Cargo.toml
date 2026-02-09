@@ -7,7 +7,7 @@ edition = "2018"
 
 [dependencies]
 m3u8-rs = "1.0.6"
-reqwest = { version="0.11", features=["blocking", "json"] }
+reqwest = { version="0.11", default-features = false, features=["blocking", "json", "rustls-tls"] }
 eyre = "0.6"
 quick-xml = "0.22"
 regex = "0.1"
