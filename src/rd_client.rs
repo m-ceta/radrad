@@ -204,7 +204,7 @@ fn get_auth_token(area_id: &String) -> eyre::Result<String> {
     if re.is_match(&area_id) {
         let client = reqwest::blocking::Client::new();
         let response1 = client.get("https://radiko.jp/v2/api/auth1")
-            .header("X-Radiko-App", "pc_html5")
+            .header("X-Radiko-App", "aSmartPhone7o")
             .header("X-Radiko-App-Version", "0.0.1")
             .header("X-Radiko-Device", "Rust.radiko")
             .header("X-Radiko-User", "dummy_user")
@@ -217,7 +217,7 @@ fn get_auth_token(area_id: &String) -> eyre::Result<String> {
             let coordvalue = get_coordinates(area_id).unwrap();
             let coodinate = format!("{},{},gps", coordvalue.0, coordvalue.1);
             let response2 = client.get("https://radiko.jp/v2/api/auth2")
-                .header("X-Radiko-App", "pc_html5")
+                .header("X-Radiko-App", "aSmartPhone7o")
                 .header("X-Radiko-App-Version", "0.0.1")
                 .header("X-Radiko-AuthToken", auth_token)
                 .header("X-Radiko-Connection", "wifi")
@@ -274,5 +274,6 @@ fn get_auth_token_4_station_id(station_id: &String) -> Option<String> {
     }
     None
 }
+
 
 
